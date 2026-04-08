@@ -1,0 +1,419 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+  <title>SwiftMotors Analytics | Login</title>
+  <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@300;400;600;700&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      background: #080a0c;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: 'DM Sans', sans-serif;
+      padding: 1.5rem;
+    }
+
+    .login-wrapper {
+      display: flex;
+      align-items: stretch;
+      width: 100%;
+      max-width: 760px;
+      min-height: 520px;
+      background: #0d0f12;
+      border-radius: 16px;
+      overflow: hidden;
+      border: 0.5px solid #1e2126;
+    }
+
+    /* Sidebar */
+    .login-sidebar {
+      width: 200px;
+      flex-shrink: 0;
+      background: #111416;
+      border-right: 0.5px solid #1e2126;
+      display: flex;
+      flex-direction: column;
+      padding: 2rem 1.5rem;
+      justify-content: space-between;
+    }
+
+    .sidebar-top {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .brand-icon {
+      width: 38px;
+      height: 38px;
+      background: #e84c1e;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 10px;
+    }
+
+    .brand-name {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 22px;
+      font-weight: 700;
+      color: #f0f0f0;
+      line-height: 1.1;
+      letter-spacing: 0.5px;
+    }
+
+    .brand-sub {
+      font-size: 10px;
+      font-weight: 400;
+      color: #555;
+      text-transform: uppercase;
+      letter-spacing: 2px;
+      margin-top: 2px;
+    }
+
+    .sidebar-nav {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+
+    .nav-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 8px 10px;
+      border-radius: 6px;
+      font-size: 13px;
+      color: #3a3f45;
+      cursor: default;
+      transition: color 0.2s;
+    }
+
+    .nav-item.active {
+      color: #e84c1e;
+      background: rgba(232, 76, 30, 0.08);
+    }
+
+    .nav-dot {
+      width: 5px;
+      height: 5px;
+      border-radius: 50%;
+      background: currentColor;
+      flex-shrink: 0;
+    }
+
+    .sidebar-footer {
+      font-size: 11px;
+      color: #2e3136;
+    }
+
+    /* Main Panel */
+    .login-main {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      padding: 3rem 2.5rem;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .grid-bg {
+      position: absolute;
+      inset: 0;
+      background-image:
+        linear-gradient(rgba(255,255,255,0.015) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255,255,255,0.015) 1px, transparent 1px);
+      background-size: 40px 40px;
+      pointer-events: none;
+    }
+
+    .accent-line {
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 2px;
+      background: linear-gradient(90deg, transparent, #e84c1e 40%, transparent);
+    }
+
+    .login-heading {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 38px;
+      font-weight: 700;
+      color: #f0f0f0;
+      line-height: 1;
+      letter-spacing: 0.5px;
+      position: relative;
+      z-index: 1;
+    }
+
+    .login-subheading {
+      font-size: 13px;
+      color: #4a4f57;
+      margin: 6px 0 2rem;
+      position: relative;
+      z-index: 1;
+    }
+
+    .login-form {
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+      position: relative;
+      z-index: 1;
+      max-width: 340px;
+    }
+
+    .form-field {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .form-label {
+      font-size: 10px;
+      text-transform: uppercase;
+      letter-spacing: 1.5px;
+      color: #4a4f57;
+      font-weight: 500;
+    }
+
+    .input-row {
+      display: flex;
+      align-items: center;
+      background: #161a1e;
+      border: 0.5px solid #242830;
+      border-radius: 8px;
+      overflow: hidden;
+      transition: border-color 0.2s;
+    }
+
+    .input-row:focus-within {
+      border-color: #e84c1e;
+    }
+
+    .input-icon {
+      width: 40px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .form-input {
+      flex: 1;
+      background: transparent;
+      border: none;
+      outline: none;
+      padding: 11px 12px 11px 0;
+      font-size: 14px;
+      color: #d0d0d0;
+      font-family: 'DM Sans', sans-serif;
+    }
+
+    .form-input::placeholder {
+      color: #30353c;
+    }
+
+    .login-btn {
+      margin-top: 4px;
+      background: #e84c1e;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      padding: 13px 20px;
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 16px;
+      font-weight: 600;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      transition: background 0.2s, transform 0.1s;
+    }
+
+    .login-btn:hover { background: #d03e10; }
+    .login-btn:active { transform: scale(0.98); }
+
+    .error-msg {
+      font-size: 12px;
+      color: #e84c1e;
+      min-height: 16px;
+    }
+
+    .demo-note {
+      font-size: 11px;
+      color: #2e3136;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .demo-note::before {
+      content: '';
+      display: inline-block;
+      width: 4px; height: 4px;
+      background: #2e3136;
+      border-radius: 50%;
+      flex-shrink: 0;
+    }
+
+    /* Stats */
+    .stats-row {
+      position: absolute;
+      bottom: 2rem;
+      right: 2rem;
+      display: flex;
+      align-items: center;
+      gap: 1.25rem;
+      z-index: 1;
+    }
+
+    .stat-item { text-align: right; }
+
+    .stat-val {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 20px;
+      font-weight: 700;
+      color: #d0d0d0;
+      line-height: 1;
+    }
+
+    .stat-lbl {
+      font-size: 10px;
+      color: #3a3f45;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      margin-top: 2px;
+    }
+
+    .stat-divider {
+      width: 0.5px;
+      height: 28px;
+      background: #1e2126;
+    }
+
+    /* Responsive */
+    @media (max-width: 560px) {
+      .login-sidebar { display: none; }
+      .login-main { padding: 2rem 1.5rem; }
+      .stats-row {
+        position: static;
+        margin-top: 2rem;
+        justify-content: flex-start;
+      }
+      .stat-item { text-align: left; }
+    }
+  </style>
+</head>
+<body>
+
+<div id="loginSection" class="login-wrapper">
+
+  <!-- Sidebar -->
+  <aside class="login-sidebar">
+    <div class="sidebar-top">
+      <div class="brand-icon">
+        <svg viewBox="0 0 24 24" fill="white" width="20" height="20">
+          <path d="M3 17l4-8 5 4 4-6 5 10H3z"/>
+        </svg>
+      </div>
+      <div class="brand-name">Swift<br>Motors</div>
+      <div class="brand-sub">Cognos Analytics</div>
+    </div>
+
+    <nav class="sidebar-nav">
+      <div class="nav-item active"><span class="nav-dot"></span><span>Dashboard</span></div>
+      <div class="nav-item"><span class="nav-dot"></span><span>Sales</span></div>
+      <div class="nav-item"><span class="nav-dot"></span><span>Inventory</span></div>
+      <div class="nav-item"><span class="nav-dot"></span><span>Reports</span></div>
+    </nav>
+
+    <div class="sidebar-footer">v4.2.1 &middot; Q2 2026</div>
+  </aside>
+
+  <!-- Main Login Panel -->
+  <main class="login-main">
+    <div class="grid-bg"></div>
+    <div class="accent-line"></div>
+
+    <h1 class="login-heading">Sign In</h1>
+    <p class="login-subheading">Enter your credentials to access the analytics platform</p>
+
+    <div class="login-form">
+
+      <div class="form-field">
+        <label class="form-label" for="loginUsername">Username</label>
+        <div class="input-row">
+          <div class="input-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="#555" stroke-width="1.5" width="15" height="15">
+              <circle cx="12" cy="8" r="4"/>
+              <path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/>
+            </svg>
+          </div>
+          <input type="text" id="loginUsername" class="form-input" placeholder="Enter your username" autocomplete="off">
+        </div>
+      </div>
+
+      <div class="form-field">
+        <label class="form-label" for="loginPassword">Password</label>
+        <div class="input-row">
+          <div class="input-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="#555" stroke-width="1.5" width="15" height="15">
+              <rect x="5" y="11" width="14" height="10" rx="2"/>
+              <path d="M8 11V7a4 4 0 018 0v4"/>
+            </svg>
+          </div>
+          <input type="password" id="loginPassword" class="form-input" placeholder="••••••••">
+        </div>
+      </div>
+
+      <button class="login-btn" id="loginBtn">
+        <svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" width="16" height="16">
+          <path d="M15 3h4a2 2 0 012 2v14a2 2 0 01-2 2h-4"/>
+          <polyline points="10 17 15 12 10 7"/>
+          <line x1="15" y1="12" x2="3" y2="12"/>
+        </svg>
+        Access Platform
+      </button>
+
+      <div id="loginError" class="error-msg"></div>
+      <div class="demo-note">Demo: any non-empty username and password</div>
+    </div>
+
+    <div class="stats-row">
+      <div class="stat-item">
+        <div class="stat-val">247</div>
+        <div class="stat-lbl">Live Feeds</div>
+      </div>
+      <div class="stat-divider"></div>
+      <div class="stat-item">
+        <div class="stat-val">98.4%</div>
+        <div class="stat-lbl">Uptime</div>
+      </div>
+      <div class="stat-divider"></div>
+      <div class="stat-item">
+        <div class="stat-val">12</div>
+        <div class="stat-lbl">Active Users</div>
+      </div>
+    </div>
+  </main>
+
+</div>
+
+<script src="data.js"></script>
+<script src="script.js"></script>
+</body>
+</html>

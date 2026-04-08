@@ -1,113 +1,67 @@
-let jsonData = [];
+// LOGIN LOGIC
+const loginBtn = document.getElementById("loginBtn");
 
-fetch('assets/dataset.xlsx')
-.then(res => res.arrayBuffer())
-.then(data => {
-    const workbook = XLSX.read(data, {type:'array'});
-    const firstSheet = workbook.Sheets[workbook.SheetNames[0]];
-    jsonData = XLSX.utils.sheet_to_json(firstSheet);
+if (loginBtn) {
+  loginBtn.addEventListener("click", () => {
+    const user = document.getElementById("loginUsername").value.trim();
+    const pass = document.getElementById("loginPassword").value.trim();
 
-    initFilters();
-    createSalesChart();
-    createDefectChart();
-})
-.catch(err => console.error(err));
-
-/* Filters */
-const monthFilter = document.getElementById('monthFilter');
-const defectFilter = document.getElementById('defectFilter');
-
-/* Charts */
-let salesChart, defectChart;
-
-function initFilters(){
-    // Month filter
-    const months = [...new Set(jsonData.map(d => d.Month))];
-    months.forEach(m => {
-        const option = document.createElement('option');
-        option.value = m;
-        option.text = m;
-        monthFilter.appendChild(option);
-    });
-
-    // Defect filter
-    const defectTypes = [...new Set(jsonData.map(d => d['Defect Type']))];
-    defectTypes.forEach(d => {
-        const option = document.createElement('option');
-        option.value = d;
-        option.text = d;
-        defectFilter.appendChild(option);
-    });
-
-    monthFilter.addEventListener('change', updateSalesChart);
-    defectFilter.addEventListener('change', updateDefectChart);
+    if (user && pass) {
+      window.location.href = "dashboard.html";
+    } else {
+      document.getElementById("loginError").innerText = "Enter username & password";
+    }
+  });
 }
 
-/* Sales Chart */
-function createSalesChart(){
-    const ctx = document.getElementById('salesChart').getContext('2d');
-    salesChart = new Chart(ctx, {
-        type: 'bar',
-        data: getSalesData('All'),
-        options: {
-            responsive: true,
-            plugins: { title: { display: true, text: 'Monthly Sales' } }
-        }
-    });
-}
+// DASHBOARD LOGIC
+if (document.getElementById("barChart")) {
 
-function getSalesData(selectedMonth){
-    let filtered = jsonData;
-    if(selectedMonth !== "All") filtered = jsonData.filter(d => d.Month === selectedMonth);
+  const plants = [...new Set(DATA.map(d => d.plant))];
+  const totals = plants.map(p =>
+    DATA.filter(d => d.plant === p).reduce((sum, d) => sum + d.units, 0)
+  );
 
-    return {
-        labels: filtered.map(d => d.Month),
-        datasets: [{
-            label: 'Units Sold',
-            data: filtered.map(d => d['Units Sold']),
-            backgroundColor: 'rgba(59,130,246,0.5)',
-            borderColor: 'rgba(59,130,246,1)',
-            borderWidth: 1
-        }]
-    };
-}
+  const ctx = document.getElementById("barChart").getContext("2d");
 
-function updateSalesChart(){
-    const selected = monthFilter.value;
-    salesChart.data = getSalesData(selected);
-    salesChart.update();
-}
+  new Chart(ctx, {
+    type: "bar",
+    data: {
+      labels: plants,
+      datasets: [{
+        label: "Units Produced",
+        data: totals,
+        backgroundColor: "orange"
+      }]
+    }
+  });
 
-/* Defect Chart */
-function createDefectChart(){
-    const ctx = document.getElementById('defectChart').getContext('2d');
-    defectChart = new Chart(ctx, {
-        type: 'bar',
-        data: getDefectData('All'),
-        options: { responsive: true, plugins: { title: { display: true, text: 'Defect Types' } } }
-    });
-}
+  // LINE CHART
+  const months = ["Jan", "Feb", "Mar"];
+  const defects = [2.1, 1.8, 2.0];
 
-function getDefectData(selectedDefect){
-    let defectTypes = [...new Set(jsonData.map(d => d['Defect Type']))];
-    if(selectedDefect !== "All") defectTypes = [selectedDefect];
+  new Chart(document.getElementById("lineChart"), {
+    type: "line",
+    data: {
+      labels: months,
+      datasets: [{
+        label: "Defect %",
+        data: defects,
+        borderColor: "blue"
+      }]
+    }
+  });
 
-    return {
-        labels: defectTypes,
-        datasets: [{
-            label: 'Units Defective',
-            data: defectTypes.map(d => 
-                jsonData.filter(x => x['Defect Type'] === d).reduce((sum,x)=>sum+x['Units Defective'],0)
-            ),
-            backgroundColor: 'rgba(255,99,132,0.5)',
-            borderColor: 'rgba(255,99,132,1)',
-            borderWidth: 1
-        }]
-    };
-}
+  // PIE CHART
+  new Chart(document.getElementById("pieChart"), {
+    type: "pie",
+    data: {
+      labels: ["Engine", "Paint", "Assembly"],
+      datasets: [{
+        data: [40, 30, 30],
+        backgroundColor: ["red", "yellow", "green"]
+      }]
+    }
+  });
 
-function updateDefectChart(){
-    const selected = defectFilter.value;
-    defectChart.data = getDefectData(selected);
-    defectChart.update();
 }
